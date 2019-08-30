@@ -24,6 +24,8 @@ MINIMUM_PLAYERS = 5                     # The minimum players needed for a tourn
 USE_PLAYER_KILLS = True                 # True = Uses player kills in game in rating adjustment calculation<br>
 PRINT_ERRORS = False                    # Prints some possible errors to the console (I never enable this)<br>
 
+To run the program simply put it in a directory, we put it on our VPS linux box, but it should work on any system that has python 3. On linux, make the file executable and just type './calc_rank.py' on the command line to start it. It is set up with a linux bash script line at the begining that will use python 3 to run it.<br>
+
 When have not run many tournaments yet and are figuring out exactly what we want the settings to be. 
 The only ones we are messing with are the NEW_PLAYER_START_RATING, KILLS_VALUE, QUALIFYING_GAME_COUNT, and MINIMUM_PLAYERS. 
 The only one we have different than the setting seen above is the KILLS_VALUE. We currently have it set to 0.5. 
