@@ -21,9 +21,9 @@ GAME_FILE = "game_{}.txt"               # The name structure for the file saved 
 NEW_PLAYER_START_RATING = 1500          # The start rating given to players (first game will adjust from this value)<br>
 QUALIFYING_GAME_COUNT = 10              # The number of games a player must play before their rating counts<br>
 MINIMUM_PLAYERS = 5                     # The minimum players needed for a tournament game<br>
-# These multipliers are for giving players bumps in their rating to promote more participation. If only one rating<br>
-#  bump is desired, set the other one to 0.0 to effectively disable it.<br>
-#  (Set PARTICIPATION_SCORE_BUMPS to True to enable these)<br>
+* These multipliers are for giving players bumps in their rating to promote more participation. If only one rating<br>
+*  bump is desired, set the other one to 0.0 to effectively disable it.<br>
+*  (Set PARTICIPATION_SCORE_BUMPS to True to enable these)<br>
 KILLS_MULTIPLIER = 0.5                  # The multiplier used for game kills<br>
 GAMES_MULTIPLIER = 1.0                  # The multiplier is for completed games<br>
 
