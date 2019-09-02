@@ -4,17 +4,21 @@ RANKING_FILE = "current_rankings.txt"   # The name of the file holding the curre
 NQ_FILE = "not_qualified.txt"           # The file to hold the players without enough games to qualify
 GAME_FILE = "game_{}.txt"               # The name structure for the file saved for each tournament game
 NEW_PLAYER_START_RATING = 1500          # The start rating given to players (first game will adjust from this value)
-KILLS_VALUE = 1.0                       # The multiplier used for game kills (used if USE_PLAYER_KILLS is True)
 QUALIFYING_GAME_COUNT = 10              # The number of games a player must play before their rating counts
 MINIMUM_PLAYERS = 5                     # The minimum players needed for a tournament game
 
-USE_PLAYER_KILLS = True                # True = Uses player kills in game in rating adjustment calculation
+PARTICIPATION_SCORE_BUMPS = True        # True = Uses player kills in game in rating adjustment calculation
 PRINT_ERRORS = False
+# These multipliers are for giving players bumps in their rating to promote more participation. If only one rating
+#  bump is desired, set the other one to 0.0 to effectively disable it.
+#  (Set PARTICIPATION_SCORE_BUMPS to True to enable these)
+KILLS_MULTIPLIER = 0.5                  # The multiplier used for game kills
+GAMES_MULTIPLIER = 1.0                  # The multiplier is for completed games
 
-VERSION = 2.0
+VERSION = 2.1
 
 
-class PUBGRatings(object):
+class GameRatings(object):
     def __init__(self):
         self.__players = []
         self.__save_players = []
@@ -41,6 +45,10 @@ class PUBGRatings(object):
     def adjustment(self, players, total_players):
         # {'name': name, 'position': position, 'kills': kills, 'games': games,
         #  'rating': rating, 'prev_kills': previous_kills}
+        if PARTICIPATION_SCORE_BUMPS:
+            kills = {}
+            for player in players:
+                kills[player['name']] = player['kills']
         adjustments = {}
         while len(players) > 1:
             if players[0]['name'] not in adjustments:
@@ -62,7 +70,11 @@ class PUBGRatings(object):
                     tr2 = -1
             del players[0]
         for player, adj in adjustments.items():
-            adjustments[player] = sum(adj) / (total_players - 1)
+            if PARTICIPATION_SCORE_BUMPS:
+                adjustments[player] = (sum(adj) / (total_players - 1)) + (float(kills[player]) * KILLS_MULTIPLIER)\
+                                      + (1.0 * GAMES_MULTIPLIER)
+            else:
+                adjustments[player] = sum(adj) / (total_players - 1)
         return adjustments
 
     def get_data(self):
@@ -201,8 +213,8 @@ class PUBGRatings(object):
                     player['new_rating'] = player['rating'] + adjustments[player['name']]
                     pos = 0
                     for p in games_results:
-                        if p['rating'] > player['new_rating'] or p['rating'] == player['new_rating'] and\
-                                p['kills'] > player['kills']:
+                        if player['new_rating'] > p['rating'] or p['rating'] == player['new_rating'] and\
+                                player['kills'] > p['kills']:
                             break
                         pos += 1
                     games_results.insert(pos, {})
@@ -371,9 +383,8 @@ class PUBGRatings(object):
         for player in self.__players:
             count = 0
             for save in self.__save_players:
-                if save['rating'] > player['rating']:
-                    break
-                elif save['rating'] == player['rating'] and save['kills'] > player['kills']:
+                if player['rating'] > save['rating'] or save['rating'] == player['rating'] and \
+                        player['position'] > save['position']:
                     break
                 count += 1
             self.__save_players.insert(count, {})
@@ -385,9 +396,8 @@ class PUBGRatings(object):
         for results in self.__results:
             count = 0
             for save in self.__save_players:
-                if save['rating'] > results['new_rating']:
-                    break
-                elif save['rating'] == results['new_rating'] and save['kills'] > results['kills']:
+                if results['new_rating'] > save['rating'] or save['rating'] == results['new_rating'] and \
+                        results['kills'] > save['kills']:
                     break
                 count += 1
             self.__save_players.insert(count, {})
@@ -413,7 +423,7 @@ class PUBGRatings(object):
         for player in self.__save_players:
             print("{0[name]:6}: {0[rank]:>2} {1:>7} {0[kills]:>6} {0[games]:>5}"
                   .format(player, round(float(player["rating"]), 2)))
-        # print("\n")
+
         print("\nNot Yet Qualified: {} Players\n(Name: Rating Kills Games)".format(len(self.__not_qualified)))
         for player in self.__not_qualified:
             print("{0[name]:6}: {1:>7} {0[kills]:>6} {0[games]:>5}"
@@ -423,12 +433,12 @@ class PUBGRatings(object):
 
 def main():
     if __name__ == '__main__':
-        PUBGRatings()
+        GameRatings()
         while True:
             input_again = input("Do you want to enter another game? (y/N): ")
             if not input_again or input_again.lower() == 'n':
                 break
-            PUBGRatings()
+            GameRatings()
 
 
 main()
