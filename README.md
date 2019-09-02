@@ -1,6 +1,8 @@
-# PUBG calc_rank.py
+# calc_rank.py
 
 This is a python 3 program for doing solo match custom game tournaments.<br>
+This can be used for any game that is solo game play, but I had PUBG in mind when making it.<br>
+It could be used for racing games as well, you would just enter 0 for a players kills each time.<br>
 
 It allows for games to be played when people can get enough players together.<br>
 A match is then entered into the program and it will spit out a player rankings based on their ELO.<br>
@@ -17,9 +19,13 @@ RANKING_FILE = "current_rankings.txt"   # The name of the file holding the curre
 NQ_FILE = "not_qualified.txt"           # The file to hold the players without enough games to qualify<br>
 GAME_FILE = "game_{}.txt"               # The name structure for the file saved for each tournament game<br>
 NEW_PLAYER_START_RATING = 1500          # The start rating given to players (first game will adjust from this value)<br>
-KILLS_VALUE = 1.0                       # The multiplier used for game kills (used if USE_PLAYER_KILLS is True)<br>
 QUALIFYING_GAME_COUNT = 10              # The number of games a player must play before their rating counts<br>
 MINIMUM_PLAYERS = 5                     # The minimum players needed for a tournament game<br>
+# These multipliers are for giving players bumps in their rating to promote more participation. If only one rating<br>
+#  bump is desired, set the other one to 0.0 to effectively disable it.<br>
+#  (Set PARTICIPATION_SCORE_BUMPS to True to enable these)<br>
+KILLS_MULTIPLIER = 0.5                  # The multiplier used for game kills<br>
+GAMES_MULTIPLIER = 1.0                  # The multiplier is for completed games<br>
 
 USE_PLAYER_KILLS = True                 # True = Uses player kills in game in rating adjustment calculation<br>
 PRINT_ERRORS = False                    # Prints some possible errors to the console (I never enable this)<br>
